@@ -19,25 +19,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/api/v1/deals", response_model=schemas.DealResponse)
+@app.post("/api/v1/deals")
 def create_deal(deal: schemas.DealCreate, db: Session = Depends(get_db)):
     """Create a new deal."""
-    return crud.create_deal(db=db, deal=deal)
+    new_deal = crud.create_deal(db=db, deal=deal)
+    return {"data": new_deal, "meta": {}, "error": None}
 
-@app.get("/api/v1/deals", response_model=List[schemas.DealResponse])
+@app.get("/api/v1/deals")
 def read_deals(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """Get all deals."""
-    return crud.get_deals(db, skip=skip, limit=limit)
+    deals = crud.get_deals(db, skip=skip, limit=limit)
+    return {"data": deals, "meta": {"page": skip, "limit": limit}, "error": None}
 
-@app.patch("/api/v1/deals/{deal_id}/stage", response_model=schemas.DealResponse)
+@app.patch("/api/v1/deals/{deal_id}/stage")
 def update_deal_stage(deal_id: str, stage_update: schemas.DealStageUpdate, db: Session = Depends(get_db)):
     """Update a deal's stage with business rule validation."""
-    return crud.update_deal_stage(db, deal_id=deal_id, stage_update=stage_update)
+    db_deal = crud.update_deal_stage(db, deal_id=deal_id, stage_update=stage_update)
+    if db_deal is None:
+        return {"data": None, "meta": {}, "error": {"code": "NOT_FOUND", "message": "Deal not found"}}
+    return {"data": db_deal, "meta": {}, "error": None}
 
-@app.get("/api/v1/deals/{deal_id}/history", response_model=List[schemas.DealAuditResponse])
+@app.get("/api/v1/deals/{deal_id}/history")
 def get_deal_history(deal_id: str, db: Session = Depends(get_db)):
     """Retrieve audit history / stage changes for a deal."""
     history = crud.get_deal_history(db, deal_id=deal_id)
     if not history:
-        raise HTTPException(status_code=404, detail="No history found for this deal")
-    return history
+        return {"data": None, "meta": {}, "error": {"code": "NOT_FOUND", "message": "No history found for this deal"}}
+    return {"data": history, "meta": {}, "error": None}

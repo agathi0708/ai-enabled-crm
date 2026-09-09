@@ -8,7 +8,7 @@ const api = axios.create({
 // Helper functions that exactly match your FastAPI endpoints
 export const fetchDeals = async () => {
   const response = await api.get('/deals');
-  return response.data;
+  return response.data.data;
 };
 
 export const updateDealStage = async (dealId, newStage) => {
@@ -16,10 +16,10 @@ export const updateDealStage = async (dealId, newStage) => {
     stage: newStage,
     changed_by: "mock-user-uuid" // We will replace this during Stage 5 integration
   });
-  return response.data;
+  return response.data.data;
 };
 
 export const fetchDealHistory = async (dealId) => {
   const response = await api.get(`/deals/${dealId}/history`);
-  return response.data;
+  return response.data.data;
 };
