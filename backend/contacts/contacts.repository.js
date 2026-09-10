@@ -1,7 +1,8 @@
 const pool = require("../db");
 
 /**
- * Get contacts with optional filters and pagination.
+ * Get contacts with filters and pagination.
+ * Results are always scoped to the authenticated owner.
  */
 async function findAll({
   page = 1,
@@ -11,19 +12,31 @@ async function findAll({
   search,
   ownerId,
 }) {
-  const offset = (page - 1) * limit;
+  const offset =
+    (page - 1) * limit;
 
   const conditions = [];
   const values = [];
   let parameterIndex = 1;
 
+  if (ownerId) {
+    conditions.push(
+      `owner_id = $${parameterIndex++}`
+    );
+    values.push(ownerId);
+  }
+
   if (status) {
-    conditions.push(`status = $${parameterIndex++}`);
+    conditions.push(
+      `status = $${parameterIndex++}`
+    );
     values.push(status);
   }
 
   if (tag) {
-    conditions.push(`$${parameterIndex++} = ANY(tags)`);
+    conditions.push(
+      `$${parameterIndex++} = ANY(tags)`
+    );
     values.push(tag);
   }
 
@@ -35,13 +48,10 @@ async function findAll({
     parameterIndex++;
   }
 
-  if (ownerId) {
-    conditions.push(`owner_id = $${parameterIndex++}`);
-    values.push(ownerId);
-  }
-
   const whereClause =
-    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    conditions.length > 0
+      ? `WHERE ${conditions.join(" AND ")}`
+      : "";
 
   const countQuery = `
     SELECT COUNT(*)::int AS total
@@ -70,10 +80,21 @@ async function findAll({
     OFFSET $${parameterIndex + 1}
   `;
 
-  const countResult = await pool.query(countQuery, values);
+  const countResult =
+    await pool.query(
+      countQuery,
+      values
+    );
 
-  const dataValues = [...values, limit, offset];
-  const dataResult = await pool.query(dataQuery, dataValues);
+  const dataResult =
+    await pool.query(
+      dataQuery,
+      [
+        ...values,
+        limit,
+        offset,
+      ]
+    );
 
   return {
     contacts: dataResult.rows,
@@ -82,29 +103,34 @@ async function findAll({
 }
 
 /**
- * Find one contact by ID.
+ * Find one contact belonging to an owner.
  */
-async function findById(id) {
-  const result = await pool.query(
-    `
-      SELECT
-        id,
-        owner_id,
-        name,
-        company,
-        email,
-        phone,
-        status,
-        tags,
-        source,
-        notes,
-        created_at,
-        updated_at
-      FROM contacts
-      WHERE id = $1
-    `,
-    [id]
-  );
+async function findById(
+  id,
+  ownerId
+) {
+  const result =
+    await pool.query(
+      `
+        SELECT
+          id,
+          owner_id,
+          name,
+          company,
+          email,
+          phone,
+          status,
+          tags,
+          source,
+          notes,
+          created_at,
+          updated_at
+        FROM contacts
+        WHERE id = $1
+          AND owner_id = $2
+      `,
+      [id, ownerId]
+    );
 
   return result.rows[0] || null;
 }
@@ -123,54 +149,62 @@ async function create({
   source,
   notes,
 }) {
-  const result = await pool.query(
-    `
-      INSERT INTO contacts (
-        owner_id,
+  const result =
+    await pool.query(
+      `
+        INSERT INTO contacts (
+          owner_id,
+          name,
+          company,
+          email,
+          phone,
+          status,
+          tags,
+          source,
+          notes
+        )
+        VALUES (
+          $1, $2, $3, $4, $5,
+          $6, $7, $8, $9
+        )
+        RETURNING
+          id,
+          owner_id,
+          name,
+          company,
+          email,
+          phone,
+          status,
+          tags,
+          source,
+          notes,
+          created_at,
+          updated_at
+      `,
+      [
+        ownerId,
         name,
-        company,
-        email,
-        phone,
+        company || null,
+        email || null,
+        phone || null,
         status,
         tags,
-        source,
-        notes
-      )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      RETURNING
-        id,
-        owner_id,
-        name,
-        company,
-        email,
-        phone,
-        status,
-        tags,
-        source,
-        notes,
-        created_at,
-        updated_at
-    `,
-    [
-      ownerId,
-      name,
-      company || null,
-      email || null,
-      phone || null,
-      status,
-      tags,
-      source || null,
-      notes || null,
-    ]
-  );
+        source || null,
+        notes || null,
+      ]
+    );
 
   return result.rows[0];
 }
 
 /**
- * Update a contact.
+ * Update a contact belonging to an owner.
  */
-async function update(id, fields) {
+async function update(
+  id,
+  fields,
+  ownerId
+) {
   const allowedFields = [
     "name",
     "company",
@@ -187,56 +221,79 @@ async function update(id, fields) {
   let parameterIndex = 1;
 
   for (const field of allowedFields) {
-    if (Object.prototype.hasOwnProperty.call(fields, field)) {
-      setParts.push(`${field} = $${parameterIndex++}`);
+    if (
+      Object.prototype.hasOwnProperty.call(
+        fields,
+        field
+      )
+    ) {
+      setParts.push(
+        `${field} = $${parameterIndex++}`
+      );
       values.push(fields[field]);
     }
   }
 
   if (setParts.length === 0) {
-    return findById(id);
+    return findById(
+      id,
+      ownerId
+    );
   }
 
-  setParts.push("updated_at = NOW()");
-  values.push(id);
-
-  const result = await pool.query(
-    `
-      UPDATE contacts
-      SET ${setParts.join(", ")}
-      WHERE id = $${parameterIndex}
-      RETURNING
-        id,
-        owner_id,
-        name,
-        company,
-        email,
-        phone,
-        status,
-        tags,
-        source,
-        notes,
-        created_at,
-        updated_at
-    `,
-    values
+  setParts.push(
+    "updated_at = NOW()"
   );
+
+  values.push(
+    id,
+    ownerId
+  );
+
+  const result =
+    await pool.query(
+      `
+        UPDATE contacts
+        SET ${setParts.join(", ")}
+        WHERE id = $${parameterIndex}
+          AND owner_id = $${parameterIndex + 1}
+        RETURNING
+          id,
+          owner_id,
+          name,
+          company,
+          email,
+          phone,
+          status,
+          tags,
+          source,
+          notes,
+          created_at,
+          updated_at
+      `,
+      values
+    );
 
   return result.rows[0] || null;
 }
 
 /**
- * Delete a contact.
+ * Delete a contact belonging to an owner.
  */
-async function remove(id) {
-  const result = await pool.query(
-    `
-      DELETE FROM contacts
-      WHERE id = $1
-      RETURNING id
-    `,
-    [id]
-  );
+async function remove(
+  id,
+  ownerId
+) {
+  const result =
+    await pool.query(
+      `
+        DELETE FROM contacts
+        WHERE id = $1
+          AND owner_id = $2
+        RETURNING id
+      `,
+      [id, ownerId]
+    );
 
   return result.rows[0] || null;
 }
