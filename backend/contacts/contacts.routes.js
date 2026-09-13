@@ -3,9 +3,13 @@ const multer = require("multer");
 
 const controller = require("./contacts.controller");
 const activitiesController = require("../activities/activities.controller");
+const { requireAuth } = require("../auth/auth.middleware");
 
 const router = express.Router();
 
+/**
+ * CSV upload configuration.
+ */
 const upload = multer({
   storage: multer.memoryStorage(),
 
@@ -35,6 +39,7 @@ const upload = multer({
  */
 router.get(
   "/",
+  requireAuth,
   controller.listContacts
 );
 
@@ -43,6 +48,7 @@ router.get(
  */
 router.post(
   "/",
+  requireAuth,
   controller.createContact
 );
 
@@ -51,30 +57,26 @@ router.post(
  */
 router.post(
   "/import",
+  requireAuth,
   upload.single("file"),
   controller.importContacts
 );
 
 /**
  * POST /api/v1/contacts/:id/convert
- *
- * Convert a lead/contact into a deal.
- *
- * This route must be before /:id so that
- * "/:id/convert" is matched correctly.
  */
 router.post(
   "/:id/convert",
+  requireAuth,
   controller.convertContactToDeal
 );
 
 /**
  * GET /api/v1/contacts/:id/activities
- *
- * Must be before /:id.
  */
 router.get(
   "/:id/activities",
+  requireAuth,
   activitiesController.listContactActivities
 );
 
@@ -83,6 +85,7 @@ router.get(
  */
 router.get(
   "/:id",
+  requireAuth,
   controller.getContact
 );
 
@@ -91,6 +94,7 @@ router.get(
  */
 router.put(
   "/:id",
+  requireAuth,
   controller.updateContact
 );
 
@@ -99,6 +103,7 @@ router.put(
  */
 router.delete(
   "/:id",
+  requireAuth,
   controller.deleteContact
 );
 
