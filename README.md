@@ -1,4 +1,4 @@
-# Module 2 — Contacts & Lead Management
+#  — Contacts & Lead Management
 
 ## AI-Enabled CRM Application
 
