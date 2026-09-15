@@ -6,7 +6,11 @@ const authRoutes = require("./auth/auth.routes");
 const contactsRoutes = require("./contacts/contacts.routes");
 const activitiesRoutes = require("./activities/activities.routes");
 const dealsRoutes = require("./deals/deals.routes");
-const { requireAuth } = require("./auth/auth.middleware");
+const usersRoutes = require("./users/users.routes");
+
+const {
+  requireAuth,
+} = require("./auth/auth.middleware");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -59,11 +63,31 @@ app.get("/api/v1/health", (req, res) => {
  *
  * POST /api/v1/auth/register
  * POST /api/v1/auth/login
+ * POST /api/v1/auth/refresh
+ * POST /api/v1/auth/logout
+ * POST /api/v1/auth/password-reset/request
+ * POST /api/v1/auth/password-reset/confirm
  * GET  /api/v1/auth/me
  */
 app.use(
   "/api/v1/auth",
   authRoutes
+);
+
+/**
+ * User Management routes.
+ *
+ * GET   /api/v1/users
+ * POST  /api/v1/users/invite
+ * PATCH /api/v1/users/:id/deactivate
+ *
+ * All user-management routes are protected
+ * by authentication and admin role checks
+ * inside users.routes.js.
+ */
+app.use(
+  "/api/v1/users",
+  usersRoutes
 );
 
 /**

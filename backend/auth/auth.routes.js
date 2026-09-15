@@ -1,39 +1,27 @@
 const express = require("express");
 
 const controller = require("./auth.controller");
-const {
-  requireAuth,
-} = require("./auth.middleware");
+const { requireAuth } = require("./auth.middleware");
 
 const router = express.Router();
 
-/**
- * POST /api/v1/auth/register
- */
+// Public authentication routes
+router.post("/register", controller.register);
+router.post("/login", controller.login);
+router.post("/refresh", controller.refresh);
+router.post("/logout", controller.logout);
+
 router.post(
-  "/register",
-  controller.register
+  "/password-reset/request",
+  controller.requestPasswordReset
 );
 
-/**
- * POST /api/v1/auth/login
- */
 router.post(
-  "/login",
-  controller.login
+  "/password-reset/confirm",
+  controller.confirmPasswordReset
 );
 
-/**
- * POST /api/v1/auth/refresh
- */
-router.post(
-  "/refresh",
-  controller.refresh
-);
-
-/**
- * GET /api/v1/auth/me
- */
+// Authenticated route
 router.get(
   "/me",
   requireAuth,
