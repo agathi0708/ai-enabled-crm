@@ -5,6 +5,7 @@ require("dotenv").config();
 const authRoutes = require("./auth/auth.routes");
 const contactsRoutes = require("./contacts/contacts.routes");
 const activitiesRoutes = require("./activities/activities.routes");
+const tasksRoutes = require("./tasks/tasks.routes");
 const dealsRoutes = require("./deals/deals.routes");
 const usersRoutes = require("./users/users.routes");
 
@@ -110,6 +111,23 @@ app.use(
   "/api/v1/activities",
   requireAuth,
   activitiesRoutes
+);
+
+/**
+ * Tasks routes.
+ *
+ * GET    /api/v1/tasks
+ * POST   /api/v1/tasks
+ * PATCH  /api/v1/tasks/:id
+ * DELETE /api/v1/tasks/:id
+ * GET    /api/v1/tasks/notifications
+ *
+ * Authentication required.
+ */
+app.use(
+  "/api/v1/tasks",
+  requireAuth,
+  tasksRoutes
 );
 
 /**

@@ -73,7 +73,8 @@ function Sidebar({
 
               const isAvailable =
                 item.label === "Contacts" ||
-                item.label === "Deals";
+                item.label === "Deals" ||
+                item.label === "Tasks";
 
               return (
                 <button

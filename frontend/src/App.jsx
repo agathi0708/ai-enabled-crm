@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import ContactsPage from "./features/contacts/ContactsPage";
 import LoginPage from "./features/auth/LoginPage";
+import TaskList from "./features/tasks/TaskList";
 
 import AppShell from "./components/AppShell";
 
@@ -116,7 +117,8 @@ function App() {
   function handleNavigate(item) {
     if (
       item === "Contacts" ||
-      item === "Deals"
+      item === "Deals" ||
+      item === "Tasks"
     ) {
       setActiveItem(item);
     }
@@ -157,12 +159,6 @@ function App() {
     content = <ContactsPage />;
   }
 
-  /**
-   * Deals placeholder.
-   *
-   * The Deals module can be connected here
-   * when its frontend is ready.
-   */
   else if (activeItem === "Deals") {
     content = (
       <div className="rounded-2xl border border-slate-200 bg-white p-8">
@@ -175,6 +171,10 @@ function App() {
         </p>
       </div>
     );
+  }
+
+  else if (activeItem === "Tasks") {
+    content = <TaskList />;
   }
 
   return (

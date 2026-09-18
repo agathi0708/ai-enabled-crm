@@ -1,3 +1,5 @@
+import NotificationBell from "../features/notifications/NotificationBell";
+
 function Topbar() {
   return (
     <header className="flex h-20 items-center justify-between border-b border-slate-200 bg-white px-6 lg:px-8">
@@ -12,7 +14,6 @@ function Topbar() {
       </div>
 
       <div className="flex items-center gap-4">
-        {/* Search */}
         <button
           type="button"
           className="hidden rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-500 transition hover:bg-slate-100 md:block"
@@ -23,18 +24,8 @@ function Topbar() {
           </span>
         </button>
 
-        {/* Notifications */}
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="relative grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white text-lg text-slate-600 transition hover:bg-slate-50"
-        >
-          🔔
+        <NotificationBell />
 
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
-        </button>
-
-        {/* Profile */}
         <button
           type="button"
           className="flex items-center gap-3 rounded-xl border border-transparent px-2 py-1.5 transition hover:bg-slate-50"
