@@ -1,0 +1,119 @@
+#root {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f7fb;
+}
+
+h1 {
+  margin-bottom: 2rem;
+}
+
+h2 {
+  margin-top: 2rem;
+}
+
+.metrics-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.metric-card p {
+  margin: 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.metric-card h2 {
+  margin: 0.5rem 0;
+  font-size: 2rem;
+}
+
+.metric-card span {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 700px) {
+  .metrics-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashboard-filters {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1rem 1.25rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-filters label {
+  font-weight: 600;
+  color: #333;
+}
+
+.dashboard-filters select {
+  padding: 0.6rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.dashboard-filters select:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.report-export {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.report-export h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.report-export button {
+  padding: 0.7rem 1.2rem;
+  margin-right: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.report-export button:hover {
+  opacity: 0.9;
+}
+
+.report-export button:active {
+  transform: scale(0.98);
+}
