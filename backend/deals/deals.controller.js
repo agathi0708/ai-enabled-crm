@@ -89,6 +89,88 @@ async function listDeals(req, res) {
 }
 
 /**
+ * POST /api/v1/deals
+ */
+async function createDeal(req, res) {
+  try {
+    const user =
+      getAuthenticatedUser(req);
+
+    const result =
+      await service.createDeal({
+        ownerId: user.id,
+        contactId: req.body?.contactId,
+        name: req.body?.name,
+        amount: req.body?.amount,
+        stage: req.body?.stage,
+      });
+
+    return res.status(201).json({
+      data: result,
+      meta: {},
+      error: null,
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+}
+
+/**
+ * PATCH /api/v1/deals/:id
+ *
+ * Update deal details.
+ */
+async function updateDeal(req, res) {
+  try {
+    const user =
+      getAuthenticatedUser(req);
+
+    const result =
+      await service.updateDeal({
+        dealId: req.params.id,
+        ownerId: user.id,
+        name: req.body?.name,
+        amount: req.body?.amount,
+        stage: req.body?.stage,
+      });
+
+    return res.status(200).json({
+      data: result,
+      meta: {},
+      error: null,
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+}
+
+/**
+ * DELETE /api/v1/deals/:id
+ *
+ * Delete a deal.
+ */
+async function deleteDeal(req, res) {
+  try {
+    const user =
+      getAuthenticatedUser(req);
+
+    const result =
+      await service.deleteDeal({
+        dealId: req.params.id,
+        ownerId: user.id,
+      });
+
+    return res.status(200).json({
+      data: result,
+      meta: {},
+      error: null,
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+}
+
+/**
  * POST /api/v1/deals/from-contact/:id
  */
 async function convertFromContact(
@@ -127,7 +209,36 @@ async function convertFromContact(
   }
 }
 
+/**
+ * PATCH /api/v1/deals/:id/stage
+ */
+async function updateStage(req, res) {
+  try {
+    const user =
+      getAuthenticatedUser(req);
+
+    const result =
+      await service.updateDealStage({
+        dealId: req.params.id,
+        stage: req.body?.stage,
+        ownerId: user.id,
+      });
+
+    return res.status(200).json({
+      data: result,
+      meta: {},
+      error: null,
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+}
+
 module.exports = {
   listDeals,
+  createDeal,
+  updateDeal,
+  deleteDeal,
   convertFromContact,
+  updateStage,
 };

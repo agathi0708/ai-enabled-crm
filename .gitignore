@@ -4,3 +4,4 @@ dist/
 backend/contacts-import-test.csv
 *.log
 *-test.csv
+venv/

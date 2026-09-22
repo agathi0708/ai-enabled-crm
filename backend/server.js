@@ -8,6 +8,8 @@ const activitiesRoutes = require("./activities/activities.routes");
 const tasksRoutes = require("./tasks/tasks.routes");
 const dealsRoutes = require("./deals/deals.routes");
 const usersRoutes = require("./users/users.routes");
+const reportsRoutes = require("./reports/reports.routes");
+const aiRoutes = require("./ai/ai.routes");
 
 const {
   requireAuth,
@@ -142,6 +144,32 @@ app.use(
   "/api/v1/deals",
   requireAuth,
   dealsRoutes
+);
+
+/**
+ * Reports routes.
+ *
+ * GET /api/v1/reports/pipeline-summary
+ * GET /api/v1/reports/performance
+ *
+ * Authentication required.
+ */
+app.use(
+  "/api/v1/reports",
+  reportsRoutes
+);
+
+/**
+ * AI routes.
+ *
+ * POST /api/v1/ai/assistant/query
+ *
+ * Authentication required inside
+ * ai.routes.js.
+ */
+app.use(
+  "/api/v1/ai",
+  aiRoutes
 );
 
 app.listen(PORT, () => {

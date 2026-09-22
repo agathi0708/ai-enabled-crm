@@ -1,6 +1,22 @@
 import NotificationBell from "../features/notifications/NotificationBell";
 
-function Topbar() {
+function Topbar({ user }) {
+  const displayName =
+    user?.name || "Module 5 Tester";
+
+  const displayRole =
+    user?.role === "sales_rep"
+      ? "Sales Representative"
+      : user?.role || "rep";
+
+  const initials = displayName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0))
+    .join("")
+    .toUpperCase();
+
   return (
     <header className="flex h-20 items-center justify-between border-b border-slate-200 bg-white px-6 lg:px-8">
       <div>
@@ -31,15 +47,16 @@ function Topbar() {
           className="flex items-center gap-3 rounded-xl border border-transparent px-2 py-1.5 transition hover:bg-slate-50"
         >
           <div className="grid h-10 w-10 place-items-center rounded-full bg-slate-900 text-sm font-bold text-white">
-            AR
+            {initials || "MT"}
           </div>
 
           <div className="hidden text-left sm:block">
             <div className="text-sm font-semibold text-slate-900">
-              Agathiyan R.K.
+              {displayName}
             </div>
+
             <div className="text-xs text-slate-500">
-              Sales Representative
+              {displayRole}
             </div>
           </div>
 

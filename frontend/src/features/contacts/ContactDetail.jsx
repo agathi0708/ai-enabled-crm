@@ -13,6 +13,7 @@ import {
 } from "../../api/activities";
 
 import EditContactForm from "./EditContactForm";
+import AIAssistantPanel from "../ai-assistant/AIAssistantPanel";
 
 const ACTIVITY_TYPES = [
   {
@@ -248,7 +249,7 @@ function ContactDetail({
 
           setDetailsError(
             err.message ||
-              "Failed to load contact details"
+            "Failed to load contact details"
           );
         }
       } finally {
@@ -298,7 +299,7 @@ function ContactDetail({
         if (!cancelled) {
           setActivitiesError(
             err.message ||
-              "Failed to load activities"
+            "Failed to load activities"
           );
         }
       } finally {
@@ -459,7 +460,7 @@ function ContactDetail({
     } catch (err) {
       setActivityFormError(
         err.message ||
-          "Failed to create activity"
+        "Failed to create activity"
       );
     } finally {
       setCreatingActivity(false);
@@ -502,23 +503,23 @@ function ContactDetail({
       const lastActivity =
         remainingActivities.length > 0
           ? remainingActivities.reduce(
-              (latest, current) => {
-                const latestTime =
-                  new Date(
-                    latest.created_at
-                  ).getTime();
+            (latest, current) => {
+              const latestTime =
+                new Date(
+                  latest.created_at
+                ).getTime();
 
-                const currentTime =
-                  new Date(
-                    current.created_at
-                  ).getTime();
+              const currentTime =
+                new Date(
+                  current.created_at
+                ).getTime();
 
-                return currentTime >
-                  latestTime
-                  ? current
-                  : latest;
-              }
-            )
+              return currentTime >
+                latestTime
+                ? current
+                : latest;
+            }
+          )
           : null;
 
       const nextSummary = {
@@ -592,7 +593,7 @@ function ContactDetail({
     } catch (err) {
       setActivitiesError(
         err.message ||
-          "Failed to delete activity"
+        "Failed to delete activity"
       );
     } finally {
       setDeletingActivity(false);
@@ -619,7 +620,7 @@ function ContactDetail({
     } catch (err) {
       setDetailsError(
         err.message ||
-          "Failed to delete contact"
+        "Failed to delete contact"
       );
 
       setDeleting(false);
@@ -693,7 +694,7 @@ function ContactDetail({
     } catch (err) {
       setConversionError(
         err.message ||
-          "Failed to convert this contact into a deal."
+        "Failed to convert this contact into a deal."
       );
     } finally {
       setConverting(false);
@@ -780,24 +781,22 @@ function ContactDetail({
                   </div>
 
                   <div
-                    className={`mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${
-                      displayedContact.status ===
-                      "converted"
+                    className={`mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${displayedContact.status ===
+                        "converted"
                         ? "bg-violet-50 text-violet-700"
                         : "bg-emerald-50 text-emerald-700"
-                    }`}
+                      }`}
                   >
                     <span
-                      className={`h-1.5 w-1.5 rounded-full ${
-                        displayedContact.status ===
-                        "converted"
+                      className={`h-1.5 w-1.5 rounded-full ${displayedContact.status ===
+                          "converted"
                           ? "bg-violet-500"
                           : "bg-emerald-500"
-                      }`}
+                        }`}
                     />
 
                     {displayedContact.status ===
-                    "converted"
+                      "converted"
                       ? "Converted to deal"
                       : "Active contact"}
                   </div>
@@ -1327,22 +1326,22 @@ function ContactDetail({
                                 )}
                               </time>
 
-                             <button
-  type="button"
-  onClick={() =>
-    setActivityToDelete(activity)
-  }
-  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-500 shadow-sm transition-all duration-200 hover:border-red-200 hover:bg-red-50 hover:text-red-600 hover:shadow"
-  aria-label={`Delete ${meta.label}`}
->
-  <span className="text-sm leading-none">
-    🗑
-  </span>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setActivityToDelete(activity)
+                                }
+                                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-500 shadow-sm transition-all duration-200 hover:border-red-200 hover:bg-red-50 hover:text-red-600 hover:shadow"
+                                aria-label={`Delete ${meta.label}`}
+                              >
+                                <span className="text-sm leading-none">
+                                  🗑
+                                </span>
 
-  <span>
-    Delete
-  </span>
-</button>
+                                <span>
+                                  Delete
+                                </span>
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -1354,6 +1353,11 @@ function ContactDetail({
             </div>
           )}
         </div>
+
+        {/* AI Assistant */}
+        <AIAssistantPanel
+          contactId={displayedContact.id}
+        />
 
         {/* Internal Notes */}
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm lg:p-7">
@@ -1384,50 +1388,50 @@ function ContactDetail({
         {/* Conversion CTA */}
         {displayedContact.status !==
           "converted" && (
-          <div className="relative overflow-hidden rounded-3xl bg-slate-950 p-6 text-white shadow-xl lg:p-8">
-            <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-indigo-500/20 blur-3xl" />
+            <div className="relative overflow-hidden rounded-3xl bg-slate-950 p-6 text-white shadow-xl lg:p-8">
+              <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-indigo-500/20 blur-3xl" />
 
-            <div className="absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-violet-500/10 blur-3xl" />
+              <div className="absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-violet-500/10 blur-3xl" />
 
-            <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
-              <div>
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  Opportunity ready
+              <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
+                <div>
+                  <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    Opportunity ready
+                  </div>
+
+                  <h2 className="text-2xl font-bold tracking-tight">
+                    Ready to move this lead forward?
+                  </h2>
+
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+                    Convert this qualified contact into a
+                    deal when the opportunity is ready.
+                  </p>
                 </div>
 
-                <h2 className="text-2xl font-bold tracking-tight">
-                  Ready to move this lead forward?
-                </h2>
-
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
-                  Convert this qualified contact into a
-                  deal when the opportunity is ready.
-                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConversionError("");
+                    setShowConvertConfirm(true);
+                  }}
+                  disabled={converting}
+                  className="shrink-0 rounded-xl bg-white px-6 py-3 text-sm font-bold text-slate-950 shadow-sm transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {converting
+                    ? "Converting..."
+                    : "Convert to Deal →"}
+                </button>
               </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setConversionError("");
-                  setShowConvertConfirm(true);
-                }}
-                disabled={converting}
-                className="shrink-0 rounded-xl bg-white px-6 py-3 text-sm font-bold text-slate-950 shadow-sm transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {converting
-                  ? "Converting..."
-                  : "Convert to Deal →"}
-              </button>
+              {conversionError && (
+                <div className="relative mt-5 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                  {conversionError}
+                </div>
+              )}
             </div>
-
-            {conversionError && (
-              <div className="relative mt-5 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-                {conversionError}
-              </div>
-            )}
-          </div>
-        )}
+          )}
 
         {/* Converted Deal Success */}
         {convertedDeal && (
@@ -1679,6 +1683,7 @@ function ContactDetail({
             </div>
           </div>
         )}
+
       </section>
     </>
   );

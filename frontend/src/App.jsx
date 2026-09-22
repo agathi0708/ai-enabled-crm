@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import ContactsPage from "./features/contacts/ContactsPage";
 import LoginPage from "./features/auth/LoginPage";
 import TaskList from "./features/tasks/TaskList";
+import Dashboard from "./features/dashboard/Dashboard";
+import Reports from "./features/reports/Reports";
+import AIAssistantPanel from "./features/ai-assistant/AIAssistantPanel";
+import DealsPage from "./features/deals/DealsPage";
 
 import AppShell from "./components/AppShell";
 
@@ -115,11 +119,18 @@ function App() {
    * Handle sidebar navigation.
    */
   function handleNavigate(item) {
-    if (
-      item === "Contacts" ||
-      item === "Deals" ||
-      item === "Tasks"
-    ) {
+    const availableItems = [
+      "Dashboard",
+      "Contacts",
+      "Deals",
+      "Tasks",
+      "Activities",
+      "Reports",
+      "AI Assistant",
+      "Settings",
+    ];
+
+    if (availableItems.includes(item)) {
       setActiveItem(item);
     }
   }
@@ -153,28 +164,87 @@ function App() {
   let content = null;
 
   /**
+   * Module 5 Dashboard.
+   */
+  if (activeItem === "Dashboard") {
+    content = <Dashboard />;
+  }
+
+  /**
    * Contacts module.
    */
-  if (activeItem === "Contacts") {
+  else if (activeItem === "Contacts") {
     content = <ContactsPage />;
   }
 
+  /**
+   * Module 3 Deals & Pipeline.
+   */
   else if (activeItem === "Deals") {
+    content = <DealsPage />;
+  }
+
+  /**
+   * Tasks module.
+   */
+  else if (activeItem === "Tasks") {
+    content = <TaskList />;
+  }
+
+  /**
+   * Activities module.
+   */
+  else if (activeItem === "Activities") {
     content = (
       <div className="rounded-2xl border border-slate-200 bg-white p-8">
         <h1 className="text-2xl font-bold text-slate-900">
-          Deals
+          Activities
         </h1>
 
         <p className="mt-2 text-sm text-slate-500">
-          Deals module is coming soon.
+          Activity management is available from the
+          contact details page.
+        </p>
+
+        <p className="mt-4 text-sm text-slate-600">
+          AI-powered Activity Summary is available in
+          the AI Assistant.
         </p>
       </div>
     );
   }
 
-  else if (activeItem === "Tasks") {
-    content = <TaskList />;
+  /**
+   * Module 5 Reports.
+   */
+  else if (activeItem === "Reports") {
+    content = <Reports />;
+  }
+
+  /**
+   * Module 5 AI Assistant.
+   */
+  else if (activeItem === "AI Assistant") {
+    content = (
+      <AIAssistantPanel />
+    );
+  }
+
+  /**
+   * Settings module.
+   */
+  else if (activeItem === "Settings") {
+    content = (
+      <div className="rounded-2xl border border-slate-200 bg-white p-8">
+        <h1 className="text-2xl font-bold text-slate-900">
+          Settings
+        </h1>
+
+        <p className="mt-2 text-sm text-slate-500">
+          Settings module is coming soon.
+        </p>
+      </div>
+    );
   }
 
   return (

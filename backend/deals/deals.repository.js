@@ -19,12 +19,14 @@ async function findAll({
   conditions.push(
     `d.owner_id = $${parameterIndex++}`
   );
+
   values.push(ownerId);
 
   if (stage) {
     conditions.push(
       `d.stage = $${parameterIndex++}`
     );
+
     values.push(stage);
   }
 
@@ -98,6 +100,245 @@ async function findAll({
     deals: dataResult.rows,
     total: countResult.rows[0].total,
   };
+}
+
+/**
+ * Create a new deal for a contact owned by
+ * the authenticated user.
+ */
+async function createDeal({
+  ownerId,
+  contactId,
+  name,
+  amount,
+  stage,
+}) {
+  const contactResult = await pool.query(
+    `
+      SELECT id
+      FROM contacts
+      WHERE id = $1
+        AND owner_id = $2
+      LIMIT 1
+    `,
+    [
+      contactId,
+      ownerId,
+    ]
+  );
+
+  if (!contactResult.rows[0]) {
+    return null;
+  }
+
+  const result = await pool.query(
+    `
+      INSERT INTO deals (
+        owner_id,
+        contact_id,
+        name,
+        stage,
+        amount
+      )
+      VALUES (
+        $1,
+        $2,
+        $3,
+        $4,
+        $5
+      )
+      RETURNING
+        id,
+        owner_id,
+        contact_id,
+        name,
+        stage,
+        amount,
+        created_at,
+        updated_at
+    `,
+    [
+      ownerId,
+      contactId,
+      name,
+      stage,
+      amount,
+    ]
+  );
+
+  return result.rows[0] || null;
+}
+
+/**
+ * Update deal details.
+ *
+ * The owner_id condition prevents one user
+ * from modifying another user's deal.
+ */
+async function updateDeal({
+  dealId,
+  ownerId,
+  name,
+  amount,
+  stage,
+}) {
+  const fields = [];
+  const values = [];
+  let parameterIndex = 1;
+
+  if (name !== undefined) {
+    fields.push(
+      `name = $${parameterIndex++}`
+    );
+
+    values.push(name);
+  }
+
+  if (amount !== undefined) {
+    fields.push(
+      `amount = $${parameterIndex++}`
+    );
+
+    values.push(amount);
+  }
+
+  if (stage !== undefined) {
+    fields.push(
+      `stage = $${parameterIndex++}`
+    );
+
+    values.push(stage);
+  }
+
+  if (fields.length === 0) {
+    const result = await pool.query(
+      `
+        SELECT
+          id,
+          owner_id,
+          contact_id,
+          name,
+          stage,
+          amount,
+          created_at,
+          updated_at
+        FROM deals
+        WHERE id = $1
+          AND owner_id = $2
+        LIMIT 1
+      `,
+      [
+        dealId,
+        ownerId,
+      ]
+    );
+
+    return result.rows[0] || null;
+  }
+
+  fields.push(
+    "updated_at = NOW()"
+  );
+
+  values.push(
+    dealId,
+    ownerId
+  );
+
+  const result = await pool.query(
+    `
+      UPDATE deals
+      SET
+        ${fields.join(", ")}
+      WHERE id = $${parameterIndex}
+        AND owner_id = $${parameterIndex + 1}
+      RETURNING
+        id,
+        owner_id,
+        contact_id,
+        name,
+        stage,
+        amount,
+        created_at,
+        updated_at
+    `,
+    values
+  );
+
+  return result.rows[0] || null;
+}
+
+/**
+ * Delete a deal.
+ *
+ * The owner_id condition prevents one user
+ * from deleting another user's deal.
+ */
+async function deleteDeal({
+  dealId,
+  ownerId,
+}) {
+  const result = await pool.query(
+    `
+      DELETE FROM deals
+      WHERE id = $1
+        AND owner_id = $2
+      RETURNING
+        id,
+        owner_id,
+        contact_id,
+        name,
+        stage,
+        amount,
+        created_at,
+        updated_at
+    `,
+    [
+      dealId,
+      ownerId,
+    ]
+  );
+
+  return result.rows[0] || null;
+}
+
+/**
+ * Update a deal stage.
+ *
+ * The owner_id condition prevents one user
+ * from modifying another user's deal.
+ */
+async function updateStage({
+  dealId,
+  stage,
+  ownerId,
+}) {
+  const result = await pool.query(
+    `
+      UPDATE deals
+      SET
+        stage = $1,
+        updated_at = NOW()
+      WHERE id = $2
+        AND owner_id = $3
+      RETURNING
+        id,
+        owner_id,
+        contact_id,
+        name,
+        stage,
+        amount,
+        created_at,
+        updated_at
+    `,
+    [
+      stage,
+      dealId,
+      ownerId,
+    ]
+  );
+
+  return result.rows[0] || null;
 }
 
 /**
@@ -181,6 +422,10 @@ async function createFromContact(
 
 module.exports = {
   findAll,
+  createDeal,
+  updateDeal,
+  deleteDeal,
+  updateStage,
   findByContact,
   createFromContact,
 };

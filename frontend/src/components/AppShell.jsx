@@ -16,7 +16,7 @@ function AppShell({
       />
 
       <div className="min-w-0 flex-1">
-        <Topbar />
+        <Topbar user={user} />
 
         <main className="min-h-[calc(100vh-5rem)] p-6 lg:p-8">
           {children}

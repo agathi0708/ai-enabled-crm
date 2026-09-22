@@ -4,17 +4,17 @@ function Sidebar({
   user,
 }) {
   const mainNavigation = [
-    { label: "Dashboard", icon: "▦" },
-    { label: "Contacts", icon: "◉" },
-    { label: "Deals", icon: "◇" },
-    { label: "Tasks", icon: "✓" },
-    { label: "Activities", icon: "◷" },
-    { label: "Reports", icon: "▥" },
+    { label: "Dashboard", icon: "\u25A6" },
+    { label: "Contacts", icon: "\u25C9" },
+    { label: "Deals", icon: "\u25C7" },
+    { label: "Tasks", icon: "\u2713" },
+    { label: "Activities", icon: "\u25F7" },
+    { label: "Reports", icon: "\u25A5" },
   ];
 
   const secondaryNavigation = [
-    { label: "AI Assistant", icon: "✦" },
-    { label: "Settings", icon: "⚙" },
+    { label: "AI Assistant", icon: "\u2726" },
+    { label: "Settings", icon: "\u2699" },
   ];
 
   function handleNavigation(label) {
@@ -22,12 +22,12 @@ function Sidebar({
   }
 
   const displayName =
-    user?.name || "Agathiyan R.K.";
+    user?.name || "Module 5 Tester";
 
   const displayRole =
     user?.role === "sales_rep"
       ? "Sales Representative"
-      : user?.role || "Sales Representative";
+      : user?.role || "rep";
 
   const initials = displayName
     .split(/\s+/)
@@ -72,9 +72,12 @@ function Sidebar({
                 item.label === activeItem;
 
               const isAvailable =
+                item.label === "Dashboard" ||
                 item.label === "Contacts" ||
                 item.label === "Deals" ||
-                item.label === "Tasks";
+                item.label === "Tasks" ||
+                item.label === "Activities" ||
+                item.label === "Reports";
 
               return (
                 <button
@@ -84,22 +87,20 @@ function Sidebar({
                     handleNavigation(item.label)
                   }
                   disabled={!isAvailable}
-                  className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition ${
-                    isActive
+                  className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition ${isActive
                       ? "bg-indigo-50 text-indigo-700"
                       : isAvailable
                         ? "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                         : "cursor-not-allowed text-slate-300"
-                  }`}
+                    }`}
                 >
                   <span
-                    className={`grid h-8 w-8 place-items-center rounded-lg text-sm ${
-                      isActive
+                    className={`grid h-8 w-8 place-items-center rounded-lg text-sm ${isActive
                         ? "bg-indigo-100 text-indigo-700"
                         : isAvailable
                           ? "bg-slate-100 text-slate-500"
                           : "bg-slate-50 text-slate-300"
-                    }`}
+                      }`}
                   >
                     {item.icon}
                   </span>
@@ -121,22 +122,44 @@ function Sidebar({
           </div>
 
           <div className="space-y-1">
-            {secondaryNavigation.map(
-              (item) => (
+            {secondaryNavigation.map((item) => {
+              const isActive =
+                item.label === activeItem;
+
+              const isAvailable =
+                item.label === "AI Assistant" ||
+                item.label === "Settings";
+
+              return (
                 <button
                   key={item.label}
                   type="button"
-                  disabled
-                  className="flex w-full cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-300"
+                  onClick={() =>
+                    handleNavigation(item.label)
+                  }
+                  disabled={!isAvailable}
+                  className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition ${isActive
+                      ? "bg-indigo-50 text-indigo-700"
+                      : isAvailable
+                        ? "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                        : "cursor-not-allowed text-slate-300"
+                    }`}
                 >
-                  <span className="grid h-8 w-8 place-items-center rounded-lg bg-slate-50 text-sm text-slate-300">
+                  <span
+                    className={`grid h-8 w-8 place-items-center rounded-lg text-sm ${isActive
+                        ? "bg-indigo-100 text-indigo-700"
+                        : isAvailable
+                          ? "bg-slate-100 text-slate-500"
+                          : "bg-slate-50 text-slate-300"
+                      }`}
+                  >
                     {item.icon}
                   </span>
 
                   <span>{item.label}</span>
                 </button>
-              )
-            )}
+              );
+            })}
           </div>
         </nav>
 
@@ -144,7 +167,7 @@ function Sidebar({
         <div className="border-t border-slate-100 p-4">
           <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-3">
             <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-slate-900 text-sm font-semibold text-white">
-              {initials || "AR"}
+              {initials || "MT"}
             </div>
 
             <div className="min-w-0">
@@ -158,6 +181,7 @@ function Sidebar({
             </div>
           </div>
         </div>
+
       </div>
     </aside>
   );
